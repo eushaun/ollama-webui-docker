@@ -7,6 +7,7 @@ This Docker Compose configuration outlines a complete setup for running local AI
 - Supported NVIDIA GPU
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installation)
 - [Docker Compose](https://docs.docker.com/compose/install/)
+- A domain if you wish to deploy to the web
 
 ## Services Overview
 
@@ -23,7 +24,13 @@ This Docker Compose configuration outlines a complete setup for running local AI
 ### tunnel
 - **Image**: `cloudflare/cloudflared:latest`
 - **Function**: Provides a secure tunnel to the web UI via Cloudflare, enhancing remote access security.
-- **Note**: We are using the demo mode by default, so the URL will change each time you restart unless you create an account with cloudflare
+    - To create a tunnel, [follow these steps from Cloudflare to create an account and tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
+    - You will need to take note of the token key and replace them in your `.env` file i.e. token=blah
+- **Note**: (for demo mode) The URL will change each time you restart unless you create an account with cloudflare.
+
+### watchtower
+- **Image**: `containrrr/watchtower`
+- **Function**: Automatically pulls latest version and updates above docker services
 
 ## Configuration and Deployment
 
@@ -36,4 +43,4 @@ This Docker Compose configuration outlines a complete setup for running local AI
 
 4. **Accessing the Web UI**:
     - Directly via `http://localhost:8080` if local access is sufficient.
-    - Through the Cloudflare Tunnel URL printed in the docker logs. Run `docker compose logs tunnel` to find the URL for remote access
+    - (for demo mode) Through the Cloudflare Tunnel URL printed in the docker logs. Run `docker compose logs tunnel` to find the URL for remote access
