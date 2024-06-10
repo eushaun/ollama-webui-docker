@@ -41,6 +41,8 @@ services:
     environment:
       - TUNNEL_URL=http://webui:8080
     command: tunnel --no-autoupdate run --token ${token}
+    # demo mode
+    # command: tunnel --no-autoupdate
     network_mode: host
     depends_on:
       - webui
