@@ -50,10 +50,13 @@ services:
       - webui
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP=true 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
 volumes:
   ollama:
