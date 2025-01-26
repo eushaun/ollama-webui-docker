@@ -1,0 +1,31 @@
+services:
+  open-webui:
+    environment:
+      ENABLE_RAG_WEB_SEARCH: True
+      RAG_WEB_SEARCH_ENGINE: "searxng"
+      RAG_WEB_SEARCH_RESULT_COUNT: 5
+      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 10
+      SEARXNG_QUERY_URL: "https://search.eushaun.xyz/search?q=<query>"
+
+### TODO: deploy below containers in Raspberry Pi instead
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./searxng:/etc/searxng
+    restart: always
+
+  searxng-tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    environment:
+      - TUNNEL_URL=http://searxng:8888
+    command: tunnel --no-autoupdate run --token ${searxng_tunnel_token}
+    # demo mode
+    # command: tunnel --no-autoupdate
+    network_mode: host
+    depends_on:
+      - searxng

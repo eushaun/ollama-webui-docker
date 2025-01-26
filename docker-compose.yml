@@ -1,7 +1,6 @@
-version: "3.8"
 services:
 
-  webui:
+  open-webui:
     image: ghcr.io/open-webui/open-webui:main
     restart: unless-stopped
     expose:
@@ -10,6 +9,7 @@ services:
      - 8080:8080/tcp
     environment:
      - OLLAMA_BASE_URL=http://ollama:11434
+     - AUTOMATIC1111_BASE_URL=http://host.docker.internal:7860
      # uncomment the following if you are running ollama on the docker host and remove the ollama service below
      #- OLLAMA_BASE_URL=http://host.docker.internal:11434
     volumes:
@@ -37,17 +37,29 @@ services:
               device_ids: ['all']
               capabilities: [gpu]
 
-  tunnel:
+  open-webui-tunnel:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
     environment:
-      - TUNNEL_URL=http://webui:8080
-    command: tunnel --no-autoupdate run --token ${token}
+      - TUNNEL_URL=http://open-webui:8080
+    command: tunnel --no-autoupdate run --token ${open_webui_tunnel_token}
     # demo mode
     # command: tunnel --no-autoupdate
     network_mode: host
     depends_on:
-      - webui
+      - open-webui
+
+  ollama-tunnel:
+   image: cloudflare/cloudflared:latest
+   restart: unless-stopped
+   environment:
+     - TUNNEL_URL=http://ollama:11434
+   command: tunnel --no-autoupdate run --token ${ollama_tunnel_token}
+   # demo mode
+   # command: tunnel --no-autoupdate
+   network_mode: host
+   depends_on:
+     - ollama
 
   watchtower:
     image: containrrr/watchtower:latest
