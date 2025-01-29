@@ -18,17 +18,21 @@ services:
      - ollama
 
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     restart: unless-stopped
     expose:
-     - 11434/tcp
+      - 11434/tcp
     ports:
-     - 11434:11434/tcp
+      - 11434:11434/tcp
     healthcheck:
       test: ollama --version || exit 1
     command: serve
+    environment:
+      - OLLAMA_HOST=0.0.0.0
     volumes:
       - ollama:/root/.ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         reservations:
